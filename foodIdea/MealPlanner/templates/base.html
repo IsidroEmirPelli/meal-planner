@@ -1,0 +1,12 @@
+<html>
+    {% load static %}
+    <head>
+        <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}">
+        <title>{% block title%}{% endblock %}</title>
+    </head>
+    <body style="background-color:#F5F5F5 ;">
+        {% block content %}
+        {% endblock %}
+    <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+    </body>
+</html>
