@@ -1,7 +1,6 @@
-from django.urls import path
-from .views import MealPlannerView, MealMakerView
+from django.urls import path,include
+
 
 urlpatterns = [
-    path("", MealPlannerView.as_view(), name="meal_planner"),
-    path("yourplate/", MealMakerView.as_view(), name="meal_maker"),
+    path('api/v1/', include('v1.urls')),
 ]

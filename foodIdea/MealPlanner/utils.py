@@ -1,15 +1,17 @@
 import openai
 import os
-api_key = os.environ.get('OPENAI_API_KEY')
+api_key = "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"
 openai.api_key = api_key
 
-def create_meal(ingredientes):
+def create_meal(ingredientes,custom_options):
+    messages=[{"role": "system", "content": f"Esto son los ingredientes que tenemos: {ingredientes}"}]
+    if custom_options is not None:
+        messages += {"role": f"system", "content": f"Estos son ingredientes custom en caso de no contener alguna condicion alimenticia o un ingrediente ignoarlo: {custom_options}"}
+    messages += [
+        {"role": "system", "content": "Queremos hacer una comida que incluya o no los ingredientes, es para 1 persona, ignora todo lo que no sea comida o condiciones alimenticias"},
+    ]
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=[
-                {"role": "system", "content": f"Estos son los ingredientes que tenemos: {ingredientes}"},
-                {"role": "system", "content": "Queremos hacer una comida que incluya o no los ingredientes, es para 1 persona, ignora todo lo que no sea comida"},
-                {"role": "system", "content": "Esta respuesta va a estar dentro de un <p> En caso de tener receta dame los pasos de la receta separados usando <br>"},
-            ]
+        messages=messages,
         )
     return response['choices'][0]['message']
