@@ -1,6 +1,6 @@
 import openai
 import os
-api_key = "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"
+api_key = os.getenv("OPENAI_API_KEY")
 openai.api_key = api_key
 
 def create_meal(ingredientes,custom_options):
