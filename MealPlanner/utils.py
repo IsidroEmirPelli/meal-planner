@@ -1,9 +1,12 @@
 import openai
 import os
-api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = api_key
+
+from .constants import OPENAI_API_KEY
+openai.api_key = OPENAI_API_KEY
 
 def create_meal(ingredientes,custom_options):
+    if OPENAI_API_KEY is None:
+        raise Exception("OPENAI_API_KEY is not set")
     messages=[{"role": "system", "content": f"Esto son los ingredientes que tenemos: {ingredientes}"}]
     if custom_options is not None:
         messages += {"role": f"system", "content": f"Estos son ingredientes custom en caso de no contener alguna condicion alimenticia o un ingrediente ignoarlo: {custom_options}"}

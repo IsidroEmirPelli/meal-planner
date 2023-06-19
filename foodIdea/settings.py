@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,12 +27,15 @@ SECRET_KEY = "django-insecure-n3x00bx#97g7+in!p*005wi4u6!vt!l5jv#95^uiaeo@x=^x1a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['isidroemir.pythonanywhere.com', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,10 +44,17 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
 
     'MealPlanner',
     'v1',
 ]
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(hours=2),
+    'ROTATE_REFRESH_TOKENS': True,
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -54,6 +66,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -89,8 +102,12 @@ WSGI_APPLICATION = "foodIdea.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        'NAME': os.environ['PG_DB_NAME'],
+        'USER': os.environ['PG_DB_USER'],
+        'PASSWORD': os.environ['PG_DB_PSW'],
+        'HOST': os.environ['PG_DB_HOST'],
+        'PORT': os.environ['PG_DB_PORT'],
     }
 }
 
@@ -136,3 +153,24 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CORS_ORIGIN_ALLOW_ALL=True
+
+REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "API",
+    "DESCRIPTION": 'API for make menues',
+    "VERSION": "0.0.2",
+    "SCHEMA_PATH_PREFIX": "/api/v[0-9]",  # default is '/api/v1/'
+    "SERVE_INCLUDE_SCHEMA": False,  # Deactivate the default schema endpoint
+    # 'AUTHENTICATION_WHITELIST': ["rest_framework_simplejwt.authentication.JWTAuthentication"],  # Add JWT to redoc
+    "ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE": False,  # Deactivate null choice in enum
+    "COMPONENT_SPLIT_REQUEST": True,  # With split components in request increment the accuracy of the schema
+    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
+}
