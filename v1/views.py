@@ -40,33 +40,3 @@ class CreateUserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
-
-    def create(self, request):
-        if request.data.get("username") is None:
-            return Response({"error": "No username was provided"})
-        if request.data.get("password") is None:
-            return Response({"error": "No password was provided"})
-        if request.data.get("email") is None:
-            return Response({"error": "No email was provided"})
-        if (
-            request.data.get("is_superuser") is not None
-            or request.data.get("is_staff") is not None
-            or request.data.get("user_permissions") is not None
-            or request.data.get("groups") is not None
-        ):
-            return Response({"error": "You are not allowed"})
-
-        user = User.objects.filter(username=request.data.get("username"))
-        if user:
-            return Response({"error": "Username already exists"})
-        user = User.objects.filter(email=request.data.get("email"))
-        if user:
-            return Response({"error": "Email already exists"})
-
-        user = User.objects.create_user(
-            username=request.data.get("username"),
-            password=request.data.get("password"),
-            email=request.data.get("email"),
-        )
-        user.save()
-        return Response({"message": "User created successfully"})
